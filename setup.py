@@ -11,7 +11,7 @@ config = {
     'author_email': 'ethanrodkin@gmail.com',
     'version': '0.1',
     'install_requires': ['nose'],
-    'packages': ['Kenken'],
+    'packages': ['kenken'],
     'scripts': [],
     'name': 'projectname'
 }

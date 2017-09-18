@@ -1,5 +1,5 @@
 from nose.tools import *
-import Kenken
+import kenken
 
 def setup():
     print "SETUP!"
