@@ -18,13 +18,13 @@ from nose.tools import *
 from kenken import kenken
 
 def test_addition():
-    test_square = kenken.Cell(1, 1, ('+', 3), [1, 2, 3, 4], [], 2)
+    test_square = kenken.Cell(1, 1, ('+', 3), [], [], 2)
     test_square.find_addition_values()
     assert_equal(test_square.possible, [[1, 2]])
 
-    test_square = kenken.Cell(1, 1, ('+', 5), [1, 2, 3, 4], [], 2)
+    test_square = kenken.Cell(1, 1, ('+', 5), [], [], 2)
     test_square.find_addition_values()
-    assert_equal(test.square.possible, [[1, 4], [2, 3]])
+    assert_equal(test_square.possible, [[1, 4], [2, 3]])
 
 # def test_subtraction():
 #     test_square = Cell(1, 1, ('-', 3), [1, 2, 3, 4], [], 2)

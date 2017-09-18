@@ -36,13 +36,18 @@ class Cell(object):
             possible_values.append(test_values[:])
         elif sum(x for x in test_values) < self.formula[1]:
             for i in range(1, self.cluster_size + 1):
-                test_values[-i] += 1
-                if sum(x for x in test_values) == self.formula[1]:
-                    possible_values.append(test_values[:])
-                    break
-                if i == 1 and test_values[-1] == puzzle_size or (i != 1 and
-                   abs(test_values[-i] - test_values[-i + 1]) in [0, 1]):
-                    break
+                while test_values[-1] < puzzle_size:
+                    test_values[-i] += 1
+                    if sum(x for x in test_values) == self.formula[1]:
+                        possible_values.append(test_values[:])
+                        while abs(test_values[-i]) - test_values[-i - 1] > 1:
+                            test_values[-i] -= 1
+                            test_values[-i - 1] += 1
+                            possible_values.append(test_values[:])
+                        break
+                    if i == 1 and test_values[-1] == puzzle_size or (i != 1 and
+                       abs(test_values[-i] - test_values[-i + 1]) in [0, 1]):
+                        break
 
 
         self.possible = sorted(possible_values)
