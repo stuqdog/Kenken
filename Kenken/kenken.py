@@ -7,4 +7,9 @@ class Cell(object):
         self.possible = possible
         self.actual = actual
 
-class 
+
+class CellCluster(object):
+
+    def __init__(self, cells, formula): ## do we need possible and actual here?
+        self.cells = cells
+        self.formula = formula
