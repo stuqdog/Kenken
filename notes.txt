@@ -1,0 +1,19 @@
+Okay so first we need a way to read the Kenken. Could try to learn image recognition,
+or could create an interface for someone to do it.
+
+Create n ** 2 classes, where n is the Kenken size. Each one is a single cell,
+with a "possible numbers" array, from 0 to n-1. Each is set equal to 1 by default.
+When a number is confirmed to not be possible, we set it to 0. When only one number
+is possible, we set the actual variable to be equal to that number.
+So, variables are: actual (single num), possible (array), formula (x9 or +12 or w/e)
+
+Create x classes for each set of blocks. Variables are an array of blocks inside
+of it, and the formula.
+
+Go through, put in any actuals we can.
+
+Then, find way to create actuals. Have each block look at what blocks in the same set
+but different row/column are doing. If they can't have a certain number then maybe
+the looking block has to be that number, e.g.
+
+Once we've logicked as much as we can, we can start random guessing.
