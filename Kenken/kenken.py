@@ -9,6 +9,7 @@ class Cell(object):
         self.possible = possible
         self.actual = actual
         self.cluster_size = cluster_size
+        self.possible_ints = []
 
     # def find_possible(self):
     #      possible_list = []
@@ -19,41 +20,31 @@ class Cell(object):
              # for x in xrange(1, (puzzle_size + 1) // self.cluster_size):
 
     def find_addition_values(self):
-        possible_values = []
-        # for x in range(cluster_size):
+        test_values = [1] * self.cluster_size
+            # Iterate up one at a time, starting with top values, until we reach
+            # the sum we're looking for.
+        for x in range(1, self.cluster_size + 1):
+            while test_values[-x] < puzzle_size:
+                test_values[-x] += 1
+                if sum(test_values) == self.formula[1]:
+                    self.possible.append(test_values[:])
+                    break
+            if sum(test_values) == self.formula[1]:
+                break
 
-    # start with range of lowest possible values, then slowly iterate up one at a
-    # time to find possible sums. Iterate order should be: iterate highest value all
-    # the way up until we hit either the sum, or the puzzle size cap.
-    # Assuming we hit sum, then we iterate up the [-2] value and down the [-1] value
-    # until they are within one of each other. Then we do the same with [-3] and [-2]
-    # and so on, all the way down to [-cluster_size]
-    # this will give us cases with duplicates (such as [3, 1] and [2, 2] both adding to
-    # 4), but this is okay. We can reject these later, and they might be useful for
-    # cases where a cluster exists in multiple rows/columns.
-        test_values = range(1, self.cluster_size + 1)
-        if sum(x for x in test_values) == self.formula[1]:
-            possible_values.append(test_values[:])
-        elif sum(x for x in test_values) < self.formula[1]:
-            for i in range(1, self.cluster_size + 1):
-                while test_values[-1] < puzzle_size:
-                    test_values[-i] += 1
-                    if sum(x for x in test_values) == self.formula[1]:
-                        possible_values.append(test_values[:])
-                        while abs(test_values[-i]) - test_values[-i - 1] > 1:
-                            test_values[-i] -= 1
-                            test_values[-i - 1] += 1
-                            possible_values.append(test_values[:])
-                        break
-                    if i == 1 and test_values[-1] == puzzle_size or (i != 1 and
-                       abs(test_values[-i] - test_values[-i + 1]) in [0, 1]):
-                        break
+        # Once we have reached sum, we lower the top value and raise lower
+        # values to find other possible combinations that reach the sum.
+        for x in range(1, self.cluster_size):
+            print test_values
+            while abs(test_values[-x] - test_values[-x - 1]) > 1:
+                test_values[-x] -= 1
+                test_values[-x - 1] += 1
+                self.possible.append(test_values[:])
 
-
-        self.possible = sorted(possible_values)
-
-
-
+        for combo in self.possible:
+            for i in combo:
+                if i not in self.possible_ints:
+                    self.possible_ints.append(i)
 
 
 class CellCluster(object):
