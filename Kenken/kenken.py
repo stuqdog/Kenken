@@ -5,13 +5,10 @@ class Cell(object):
     def __init__(self, x, y, formula, possible, actual, cluster_size):
         self.x = x
         self.y = y
-        self.formula = formula #should be (operator, value) - or maybe just two vars.
-        self.possible = possible
+        self.formula = formula # should be (operator, value)
+        self.possible = possible # we may just want this to be an empty list initially
         self.actual = actual
         self.cluster_size = cluster_size
-        self.possible_ints = []
-
-
 
 
 class CellCluster(object):
@@ -26,8 +23,8 @@ class CellCluster(object):
         for cell in self.cells:
             for combo in self.possible:
                 for i in combo:
-                    if i not in cell.possible_ints:
-                        cell.possible_ints.append(i)
+                    if i not in cell.possible:
+                        cell.possible.append(i)
 
     def find_addition_values(self):
         test_values = [1] * self.cluster_size
