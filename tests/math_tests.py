@@ -26,21 +26,21 @@ def test_addition():
     test_square.find_addition_values()
     assert_equal(test_square.possible, [[1, 4], [2, 3]])
 
-# def test_subtraction():
-#     test_square = Cell(1, 1, ('-', 3), [1, 2, 3, 4], [], 2)
-#     test_square.find_possible()
-#     assert_equal(test_square.possible, [1, 4])
+def test_subtraction():
+    test_square = kenken.Cell(1, 1, ('-', 3), [], [], 2)
+    test_square.find_subtraction_values()
+    assert_equal(test_square.possible, [[1, 4]])
 #
 # def test_multiplication():
 #     test_square = Cell(1, 1, ('*', 12), [1, 2, 3, 4], [], 2)
 #     test_square.find_possible()
 #     assert_equal(test_square.possible, [3, 4])
 #
-# def test_division():
-#     test_square = Cell(1, 1, ('/', 3), [1, 2, 3, 4], [], 2)
-#     test_square.find_possible()
-#     assert_equal(test_square.possible, [1, 3])
-#
-#     test_square = Cell(1, 1, ('/', 2), [1, 2, 3, 4], [], 2)
-#     test_square.find_possible()
-#     assert_equal(test_square.possible, [[1, 2], [2, 4]])
+def test_division():
+    test_square = kenken.Cell(1, 1, ('/', 3), [], [], 2)
+    test_square.find_division_values()
+    assert_equal(test_square.possible, [[1, 3]])
+
+    test_square = kenken.Cell(1, 1, ('/', 2), [], [], 2)
+    test_square.find_division_values()
+    assert_equal(test_square.possible, [[1, 2], [2, 4]])
