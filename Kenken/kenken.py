@@ -20,11 +20,14 @@ class CellCluster(object):
         self.possible = possible
 
     def set_possible_ints(self):
+        pass
         for cell in self.cells:
             for combo in self.possible:
                 for i in combo:
                     if i not in cell.possible:
                         cell.possible.append(i)
+
+
 
     def find_addition_values(self):
         test_values = [1] * self.cluster_size
@@ -41,12 +44,20 @@ class CellCluster(object):
 
         # Once we have reached sum, we lower the top value and raise lower
         # values to find other possible combinations that reach the sum.
-        for x in range(1, self.cluster_size):
-            print test_values
-            while abs(test_values[-x] - test_values[-x - 1]) > 1:
-                test_values[-x] -= 1
-                test_values[-x - 1] += 1
-                self.possible.append(test_values[:])
+
+        #But to solve the problem discussed above, we need to repeat this
+        #process over and over until all values are within one of the values
+        #next to them.
+        while True:
+            for x in range(1, self.cluster_size):
+                print test_values
+                while abs(test_values[-x] - test_values[-x - 1]) > 1:
+                    test_values[-x] -= 1
+                    test_values[-x - 1] += 1
+                    self.possible.append(test_values[:])
+            if all(abs(test_values[x] - test_values[x + 1]) <= 1
+                   for x in range(self.cluster_size - 1)):
+                break
         self.set_possible_ints()
 
     def find_subtraction_values(self):
