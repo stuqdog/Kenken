@@ -1,4 +1,4 @@
-puzzle_size = 4
+puzzle_size = 8
 
 class Cell(object):
 
@@ -48,6 +48,16 @@ class CellCluster(object):
         #But to solve the problem discussed above, we need to repeat this
         #process over and over until all values are within one of the values
         #next to them.
+
+        #Well, this doesn't quite solve it either. We're definitely still missing
+        #combinations.
+"""After doing this by hand, it seems like a possible method may be:
+1. set the [-1] entry at puzzle size, set everything else at 1
+2. if we're over sum, iterate down top value until we reach sum (if this happens,
+then we have our solution immediately)
+3. Then,
+"""
+
         while True:
             for x in range(1, self.cluster_size):
                 print test_values
@@ -69,3 +79,9 @@ class CellCluster(object):
         for x in range(1, puzzle_size / self.formula[1] + 1):
             self.possible.append([x, x * self.formula[1]])
         self.set_possible_ints()
+
+
+def sum_test(cluster_size, cluster_sum, puzzle_size):
+    test = [1] * cluster_size
+    for i, x in enumerate(reversed(test)):
+        
