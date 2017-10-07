@@ -1,3 +1,4 @@
+import itertools
 puzzle_size = 8
 
 class Cell(object):
@@ -30,17 +31,16 @@ class CellCluster(object):
 
 
     def find_addition_values(self):
-        test_values = [1] * self.cluster_size
+        arr = list(range(1, puzzles_size + 1)) * self.cluster_size
+        possible = list(set(x for x in itertools.combinations(
+               arr, self.cluster_size) if sum(x) == self.formula[1]))
+        possible = [sorted(x) for x in possible]
+        short_possible = []
+        for x in possible:
+            if x not in short_possible:
+                short_possible.append(x)
             # Iterate up one at a time, starting with top values, until we reach
             # the sum we're looking for.
-        for x in range(1, self.cluster_size + 1):
-            while test_values[-x] < puzzle_size:
-                test_values[-x] += 1
-                if sum(test_values) == self.formula[1]:
-                    self.possible.append(test_values[:])
-                    break
-            if sum(test_values) == self.formula[1]:
-                break
 
         # Once we have reached sum, we lower the top value and raise lower
         # values to find other possible combinations that reach the sum.
