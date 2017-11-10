@@ -1,3 +1,18 @@
+"""
+###############################################################################
+# TO DO:                                                                      #
+# 1. Find combinations based on formula - PROBABLY DONE, CHECK * FORMULA -    #
+# 2. Logic for reducing from possible to actual.                              #
+# 3. As a first step, We can reduce some options. (4, 4, 4, 4) is not a valid #
+#    solution to +16, e.g. This will be a bigger problem in multiplication    #
+#    Need to keep track of how much x/y variation there is in the cluster.    #
+#    Lower of the two (+1) is the max number of copies of any given digit     #
+# 4. From there, we need a number of methods for reducing. There will         #
+#    likely be a lot of them. Will need to look at cluster, but also row and  #
+#    column.                                                                  #
+###############################################################################
+"""
+
 import itertools
 puzzle_size = 8
 
@@ -67,3 +82,44 @@ class CellCluster(object):
             possible_long = list(set(x for x in itertools.combinations(
                 arr, self.cluster_size) if self.check_multiplication_value(x)
                 == self.formula[1]))
+
+
+
+
+
+def visual_display():
+"""
+This works right now, which is cool. But needs more functionality. Want to allow people to select which numbers are in a group, and then define what that group's function is. How we can do this:
+
+1) Create a defined_cells dictionary.
+2) If a cell is in the defined_cells dict, then instead of printing the cell_number in the display formatting, we print group, or formula, or something like that.
+  a) We could probably set it up to do both on different rows, though that will complicate a bit the printing.
+3) Create a new function that allows to create new ones. It'll just ask people to say which cells are in a group, and what the group formula is.
+  In this function call, we need to limit the number of clusters that are legal to create. Can't so cells 1, 6, and 24, e.g. Make sure all cells are either one away from each other, or (size) away from each other. But also account for things being along the edge. e.g., in a size 6, cells 6 and 7 can't be legally connected.
+"""
+    cell_number = 1
+    size = int(input("What is the puzzle size? \n > "))
+    while size > 9 and size < 3:
+        print("Size must be a number between 3 and 9, inclusive.")
+        size = int(input("What is the puzzle size? \n > "))
+    top = "_" + "______" * size
+    mid_cell = "|" + "     |" * size
+    mid_cell_bottom = "|" + "_____|" * size
+
+    print(top)
+
+    for row in range(size):
+        print(mid_cell)
+        print(mid_cell)
+        mid_cell_num = ''
+        for column in range(size):
+            if cell_number < 10:
+                if cell_number not in defined_cells:
+                mid_cell_num += "  {}  |".format(cell_number)
+            else:
+                mid_cell_num += " {}  |".format(cell_number)
+            cell_number += 1
+        mid_cell_num = "|" + mid_cell_num
+        print(mid_cell_num)
+        print(mid_cell)
+        print(mid_cell_bottom)
