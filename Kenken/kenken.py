@@ -87,39 +87,75 @@ class CellCluster(object):
 
 
 
-def visual_display():
-"""
+
+'''
 This works right now, which is cool. But needs more functionality. Want to allow people to select which numbers are in a group, and then define what that group's function is. How we can do this:
 
 1) Create a defined_cells dictionary.
 2) If a cell is in the defined_cells dict, then instead of printing the cell_number in the display formatting, we print group, or formula, or something like that.
   a) We could probably set it up to do both on different rows, though that will complicate a bit the printing.
 3) Create a new function that allows to create new ones. It'll just ask people to say which cells are in a group, and what the group formula is.
-  In this function call, we need to limit the number of clusters that are legal to create. Can't so cells 1, 6, and 24, e.g. Make sure all cells are either one away from each other, or (size) away from each other. But also account for things being along the edge. e.g., in a size 6, cells 6 and 7 can't be legally connected.
-"""
-    cell_number = 1
+  In this function call, we need to limit the number of clusters that are legal to create. Can't so cells 1, 6, and 24, e.g. Make sure all cells are either one away from each other, or (size) away from each other. But also account for things being along the edge. e.g., in a size 6, cells 6 and 7 can't be legally connected.'''
+
+size = int(input("What is the puzzle size? \n > "))
+while size > 9 and size < 3:
+    print("Size must be a number between 3 and 9, inclusive.")
     size = int(input("What is the puzzle size? \n > "))
-    while size > 9 and size < 3:
-        print("Size must be a number between 3 and 9, inclusive.")
-        size = int(input("What is the puzzle size? \n > "))
-    top = "_" + "______" * size
+
+defined_cells = {}
+
+
+
+def visual_display():
+    cell_number = 1
+
+    top = " _____" * size
     mid_cell = "|" + "     |" * size
     mid_cell_bottom = "|" + "_____|" * size
 
-    print(top)
+    puzzle = top + "\n"
 
     for row in range(size):
-        print(mid_cell)
-        print(mid_cell)
+        puzzle += (mid_cell + "\n") * 2
+        # print(mid_cell)
+        # print(mid_cell)
         mid_cell_num = ''
         for column in range(size):
-            if cell_number < 10:
-                if cell_number not in defined_cells:
-                mid_cell_num += "  {}  |".format(cell_number)
+            if cell_number in defined_cells:
+                if defined_cells[cell_number] < 10:
+                    mid_cell_num += " g{}  |".format(defined_cells[cell_number])
+                else:
+                    mid_cell_num += " g{} |".format(defined_cells[cell_number])
             else:
-                mid_cell_num += " {}  |".format(cell_number)
+                if cell_number < 10:
+                    mid_cell_num += "  {}  |".format(cell_number)
+                else:
+                    mid_cell_num += " {}  |".format(cell_number)
             cell_number += 1
         mid_cell_num = "|" + mid_cell_num
-        print(mid_cell_num)
-        print(mid_cell)
-        print(mid_cell_bottom)
+        puzzle += mid_cell_num + "\n"
+        puzzle += mid_cell + "\n"
+        puzzle += mid_cell_bottom + "\n"
+    return puzzle
+
+puzzle = visual_display()
+print(puzzle)
+
+def create_cluster(cluster_num):
+    new_cluster = input("""Please enter the members of a cell,
+                             \rdivided by commas.\n >""").strip().split(',')
+    while any(int(c) not in set(range(1, size ** 2 + 1)) for c in new_cluster):
+        new_cluster = input("""Invalid input. Cells must be in numeric form,
+                \rseparated by commas. Try again!\n >""").strip().split(',')
+    while any(int(cell) in defined_cells for cell in new_cluster):
+        new_cluster = input("""Invalid input. Cells cannot be in
+                   \rmultiple clusters. Try again!\n >""").strip().split(',')
+
+    for cell in new_cluster:
+        defined_cells[int(cell)] = cluster_num
+
+cluster_number = 1
+while any(x not in defined_cells for x in range(1, size ** 2 + 1)):
+    create_cluster(cluster_number)
+    cluster_number += 1
+    print(visual_display())
