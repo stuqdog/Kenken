@@ -84,19 +84,6 @@ class CellCluster(object):
                 == self.formula[1]))
 
 
-
-
-
-
-'''
-This works right now, which is cool. But needs more functionality. Want to allow people to select which numbers are in a group, and then define what that group's function is. How we can do this:
-
-1) Create a defined_cells dictionary.
-2) If a cell is in the defined_cells dict, then instead of printing the cell_number in the display formatting, we print group, or formula, or something like that.
-  a) We could probably set it up to do both on different rows, though that will complicate a bit the printing.
-3) Create a new function that allows to create new ones. It'll just ask people to say which cells are in a group, and what the group formula is.
-  In this function call, we need to limit the number of clusters that are legal to create. Can't so cells 1, 6, and 24, e.g. Make sure all cells are either one away from each other, or (size) away from each other. But also account for things being along the edge. e.g., in a size 6, cells 6 and 7 can't be legally connected.'''
-
 size = int(input("What is the puzzle size? \n > "))
 while size > 9 and size < 3:
     print("Size must be a number between 3 and 9, inclusive.")
@@ -117,8 +104,6 @@ def visual_display():
 
     for row in range(size):
         puzzle += (mid_cell + "\n") * 2
-        # print(mid_cell)
-        # print(mid_cell)
         mid_cell_num = ''
         for column in range(size):
             if cell_number in defined_cells:
@@ -138,24 +123,49 @@ def visual_display():
         puzzle += mid_cell_bottom + "\n"
     return puzzle
 
-puzzle = visual_display()
-print(puzzle)
 
-def create_cluster(cluster_num):
-    new_cluster = input("""Please enter the members of a cell,
+def check_if_legal(cluster):
+    """This logic can be approved. Do research to avoid doubling work (1 is next to 2, do we really need to also confirm that 2 is next to 1?) and also to avoid creating false groups (1 is next to 2 and 15 is next to 16, but 1, 2, 15, 16 is not a vaild group)"""
+    if len(cluster) == 1:
+        return True
+    for cell in cluster:
+        if any(int(c) == int(cell) + size for c in cluster):
+            pass
+        elif any(int(c) == int(cell) - size for c in cluster):
+            pass
+        elif int(cell) % size != 1 and any(int(c) ==
+                                           int(cell) - 1 for c in cluster):
+            pass
+        elif int(cell) % size != 0 and any(int(c) ==
+                                           int(cell) + 1 for c in cluster):
+            pass
+        else:
+            return False
+    return True
+
+
+def create_clusters():
+    """We should use try/except here to avoid crashes and lost progress due to
+    input mistakes"""
+    cluster_num = 1
+    while any(x not in defined_cells for x in range(1, size ** 2 + 1)):
+        new_cluster = input("""Please enter the members of a cell,
                              \rdivided by commas.\n >""").strip().split(',')
-    while any(int(c) not in set(range(1, size ** 2 + 1)) for c in new_cluster):
-        new_cluster = input("""Invalid input. Cells must be in numeric form,
-                \rseparated by commas. Try again!\n >""").strip().split(',')
-    while any(int(cell) in defined_cells for cell in new_cluster):
-        new_cluster = input("""Invalid input. Cells cannot be in
-                   \rmultiple clusters. Try again!\n >""").strip().split(',')
+        while any(int(c) not in set(range(1, size ** 2 + 1)) for c in new_cluster):
+            new_cluster = input("""Invalid input. Cells must be in numeric form,
+                   \rseparated by commas. Try again!\n >""").strip().split(',')
+        while any(int(cell) in defined_cells for cell in new_cluster):
+            new_cluster = input("""Invalid input. Cells cannot be in
+                     \rmultiple clusters. Try again!\n >""").strip().split(',')
+        while check_if_legal(new_cluster) == False:
+            new_cluster = input("""Invalid input. Cells must be connected either
+            \rvertically or horizontally. Try again!\n >""").strip().split(',')
 
-    for cell in new_cluster:
-        defined_cells[int(cell)] = cluster_num
+        for cell in new_cluster:
+            defined_cells[int(cell)] = cluster_num
+        cluster_num += 1
+        print(visual_display())
 
-cluster_number = 1
-while any(x not in defined_cells for x in range(1, size ** 2 + 1)):
-    create_cluster(cluster_number)
-    cluster_number += 1
-    print(visual_display())
+
+print(visual_display())
+create_clusters()
