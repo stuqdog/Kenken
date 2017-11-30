@@ -131,7 +131,7 @@ class Cluster(object):
         digits we need.
         We probably need two reduce_possible functions. One for a cluster, and
         one for row/column.'''
-        solved = [cell.actual for cell in self.cells if cell.actual != None]
+        solved = [cell.actual for cell in self.cells if cell.actual != None] #test
 
 
 def create_layout():
