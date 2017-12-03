@@ -39,9 +39,7 @@ class Cluster(object):
             cell.possible_combos = self.possible
             for combo in self.possible:
                 cell.possible += combo
-                # if len(combo) == 1:
-                #     print(cell.possible)
-            # cell.possible = list(set(cell.possible))
+            cell.possible = list(set(cell.possible))
 
 
     def find_values(self):
