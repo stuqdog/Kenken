@@ -1,33 +1,13 @@
 """
 ###############################################################################
 # TO DO:                                                                      #
-# 1. Find combinations based on formula - PROBABLY DONE, CHECK * FORMULA -    #
-# 2. Logic for reducing from possible to actual.                              #
-# 2a.As a first step, We can reduce some options. (4, 4, 4, 4) is not a valid #
-#    solution to +16, e.g. This will be a bigger problem in multiplication    #
-#    Need to keep track of how much x/y variation there is in the cluster.    #
-#    Lower of the two (+1) is the max number of copies of any given digit     #
-#    --- SOLVED ---                                                           #
-# 2b.From there, we need a number of methods for reducing. There will         #
-#    likely be a lot of them. Will need to look at cluster, but also row and  #
-#    column.                                                                  #
-# 3. Fix group making. subtraction and division shouldn't be allowed to be    #
-#    more than two numbers, e.g. ---THIS SHOULD BE DONE---                    #
-# 4. Fix update_cells, specifically at the top. Need to confirm that the      #
+# 1. Logic for reducing from possible to actual.                              #
+# 1b.We need a number of methods for reducing. There will likely be a lot     #
+#    them. Will need to look at cluster, but also row and column              #
+# 2. Fix update_cells, specifically at the top. Need to confirm that the      #
 #    formula type is legitimate even after it is being reset.                 #
-# 5. MULTIPLICATION ISN'T WORKING. --- FIXED ---                              #
-# 6. For some reason, when finding possible, the possible values from the     #
-#    previous cluster are carrying over. To reproduce: work with a 3x3 puzle, #
-#    create a first group from cells 1 through 5 as *36, and second cluster   #
-#    as cells 6 through 9 as +7. The solution for cluster one appear in the   #
-#    second cluster's possible list.                                          #
-#    NOTE: This seems to be solved by changing self.possible in the cluster   #
-#    __init__. if we say self.possible=possible and default possible to [],   #
-#    then it doesn't work. If we say self.possible=[] then it works fine.     #
-#    Why is this? Okay, I _think_ the answer is that it's roughly equivalent  #
-#    to defining the variable in the namespace _before_ the __init__. What    #
-#    that does is basically say, "Okay, this variable doesn't belong to self, #
-#    if belongs to the class. So all class objects share it."                 #
+# 3. We're updating cluster.possible in cluster.reduce_possible(). This seems #
+#    like it'll be useful at some point, but not sure how yet. Figure it out. #
 ###############################################################################
 """
 
@@ -42,6 +22,7 @@ class Cell(object):
         self.formula = None
         self.cluster = None
         self.actual = None
+        self.possible_combos = []
         self.possible = []
 
 
@@ -55,11 +36,13 @@ class Cluster(object):
 
     def set_possible_ints(self):
         for cell in self.cells:
+            cell.possible_combos = self.possible
             for combo in self.possible:
                 cell.possible += combo
-                if len(combo) == 1:
-                    print(cell.possible)
-            cell.possible = list(set(cell.possible))
+                # if len(combo) == 1:
+                #     print(cell.possible)
+            # cell.possible = list(set(cell.possible))
+
 
     def find_values(self):
         if self.formula[0] == '+':
@@ -87,17 +70,17 @@ class Cluster(object):
         for x in possible_long:
             if x not in self.possible:
                 self.possible.append(x)
-        self.set_possible_ints()
+
 
     def find_subtraction_values(self):
         for x in range(self.formula[1] + 1, size + 1):
             self.possible.append([x - self.formula[1], x])
-        self.set_possible_ints()
+
 
     def find_division_values(self):
-        for x in range(1, size / self.formula[1] + 1):
+        for x in range(1, size // self.formula[1] + 1):
             self.possible.append([x, x * self.formula[1]])
-        self.set_possible_ints()
+
 
     def check_multiplication_value(self, arr):
         check = 1
@@ -131,7 +114,17 @@ class Cluster(object):
         digits we need.
         We probably need two reduce_possible functions. One for a cluster, and
         one for row/column.'''
-        solved = [cell.actual for cell in self.cells if cell.actual != None] #test
+        solved = [cell.actual for cell in self.cells if cell.actual != None]
+        self.possible = [combo for combo in self.possible if all(
+                      Counter(combo)[x] >= Counter(solved)[x] for x in solved)]
+        for cell in self.cells:
+            cell.possible = [x for x in cell.possible if x not in solved]
+            if len(cell.possible) == 1:
+                cell.actual = cell.possible[0]
+                cell.possible = []
+                solved.append(cell.actual)
+
+
 
 
 def create_layout():
@@ -251,6 +244,25 @@ def create_new_cluster(formula, cluster_string):
     clusters.append(new_cluster)
 
 
+def reduce_x_y(val):
+    row = [layout[x][val] for x in range(size)]
+    solved = [cell.actual for cell in row if cell.actual != None]
+    for cell in row:
+        cell.possible = [x for x in cell.possible if x not in solved]
+        if len(cell.possible) == 1:
+            cell.actual = cell.possible[0]
+            cell.possible = []
+            solved.append(cell.actual)
+    column = [layout[val][y] for y in range(size)]
+    solved = [cell.actual for cell in column if cell.actual != None]
+    for cell in column:
+        cell.possible = [y for y in cell.possible if y not in solved]
+        if len(cell.possible) == 1:
+            cell.actual = cell.possible[0]
+            cell.possible = []
+            solved.append(cell.actual)
+
+
 size = int(input("What is the puzzle size?\n> "))
 while size < 3 and size > 9:
     size = int(input("Puzzle size must be between 3 and 9. Try again!\n> "))
@@ -283,4 +295,18 @@ for cluster in clusters:
     cluster.find_values()
     cluster.reduce_possible()
     cluster.set_possible_ints()
-    print(cluster.possible)
+
+counts = 0
+while any(cell.actual == None for cell in cell_generator()):
+    for cluster in clusters:
+        cluster.reduce_possible()
+    for row_or_column in range(size):
+        reduce_x_y(row_or_column)
+    counts += 1
+    if counts > 800:
+        break
+
+for cell in cell_generator():
+    cell.visual = " {} ".format(cell.actual)
+
+print(visual_layout(layout))
