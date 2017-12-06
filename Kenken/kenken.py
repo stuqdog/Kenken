@@ -8,6 +8,11 @@
 #    formula type is legitimate even after it is being reset.                 #
 # 3. We're updating cluster.possible in cluster.reduce_possible(). This seems #
 #    like it'll be useful at some point, but not sure how yet. Figure it out. #
+# 4. CURRENT PROBLEM: when updating cell.possible, we are currently removing  #
+#    numbers that currently exist in the cluster.cells.actual. But, this is a #
+#    problem in cases where a possible combo involves repeating numbers (x9,  #
+#    e.g.). Find a way to avoid this problem while still accounting for the   #
+#    solved cells. See reduce_possible.                                       #
 ###############################################################################
 """
 
