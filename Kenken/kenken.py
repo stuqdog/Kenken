@@ -126,6 +126,9 @@ class Cluster(object):
                     if cell.actual in cell_.possible and (cell.x == cell_.x or
                     cell.y == cell_.y):
                         del cell_.possible[cell_.index(cell.actual)]
+            for q in range(1, size+1): #######
+                if q in cell.possible and all(q not in y for y in self.possible):
+                    cell.possible.remove(q) ########
 
 
 def create_layout():
