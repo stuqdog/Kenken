@@ -12,13 +12,6 @@
 #    vertical +6, we know that the (1, 5) possible isn't actually possible.   #
 # 2. Fix update_cells, specifically at the top. Need to confirm that the      #
 #    formula type is legitimate even after it is being reset.                 #
-# 3. We're updating cluster.possible in cluster.reduce_possible(). This seems #
-#    like it'll be useful at some point, but not sure how yet. Figure it out. #
-# 4. CURRENT PROBLEM: when updating cell.possible, we are currently removing  #
-#    numbers that currently exist in the cluster.cells.actual. But, this is a #
-#    problem in cases where a possible combo involves repeating numbers (x9,  #
-#    e.g.). Find a way to avoid this problem while still accounting for the   #
-#    solved cells. See reduce_possible. --SOLVED--                            #
 ###############################################################################
 """
 
@@ -103,12 +96,10 @@ class Cluster(object):
                     self.possible.append(x)
 
     def set_single_value(self):
-        # self.cells[0].actual = self.formula[1]
         self.cells[0].possible = [self.formula[1]]
 
     def set_possible_ints(self):
         for cell in self.cells:
-            #cell.possible = self.possible[:]
             for combo in self.possible:
                 cell.possible += combo
             cell.possible = list(set(cell.possible))
@@ -137,10 +128,7 @@ def create_layout():
     for row in range(size):
         layout.append([])
         for column in range(size):
-            if cell_number < 10:
-                layout[-1].append(Cell(column, row, '  ' + str(cell_number)))
-            else:
-                layout[-1].append(Cell(column, row, ' ' + str(cell_number)))
+            layout[-1].append(Cell(column, row, str(cell_number).rjust(3)))
             cell_number += 1
     return layout
 
@@ -174,18 +162,6 @@ def check_if_legal(cluster):
     '''refactor likely useful here. Seems awkward that we have to construct a
     new 2d array each time we want to check legality. We can probably make this
     more efficient.
-
-    Also: putting legality test outside for some reason causes its values to
-    remain updated. Like I can't make an all zero legality_test, and then run it
-    through check_if_legal a bunch and have it still be all zero. Why?
-    The variable doesn't reset when we recall check_if_legal, it just has a set
-    scope within check_if_legal?
-    A: So after some reading, it looks like variables that are referenced but
-    not defined within a function are assumed to be global. So even though the
-    name has changed, we still have a global var I guess?
-
-    No, I think it's just that there's only one array throughout, and so the
-    same array is getting modified no matter what variable name we attach to it.
     '''
     legality_test = [[0] * size for x in range(size)]
     for cell in cluster:
@@ -237,10 +213,7 @@ def create_new_cluster(formula, cluster_string):
     new_cluster = Cluster(formula)
     for cell in cluster_string:
         new_cell = layout[(cell - 1) // size][(cell - 1) % size]
-        if group_number < 10:
-            new_cell.visual = " g{}".format(str(group_number))
-        else:
-            new_cell.visual = "g{}".format(str(group_number))
+        new_cell.visual = ("g{}".format(str(group_number))).rjust(3)
         new_cell.formula = formula
         new_cell.cluster = group_number
         new_cluster.cells.append(new_cell)
