@@ -12,6 +12,10 @@
 #    vertical +6, we know that the (1, 5) possible isn't actually possible.   #
 # 2. Fix update_cells, specifically at the top. Need to confirm that the      #
 #    formula type is legitimate even after it is being reset.                 #
+# 3. Significant refactor, but: maybe we should convert possible from a list  #
+#    to a collections Counter? Will definitely make some of this easier and   #
+#    faster. Thinking right now in particular the incomplete code snipped at  #
+#    bottom of "reduce_x_y".
 ###############################################################################
 """
 
@@ -250,6 +254,19 @@ def reduce_x_y(val):
             cell.actual = cell.possible[0]
             cell.possible = []
             solved.append(cell.actual)
+
+    ##################
+    for _ in range(2, size):
+        combo_solve = [x for x in itertools.combinations(row/column, _) if
+                       all(y.possible == x[0].possible for y in x) and
+                       len(x[0].possible) == _]
+        for z in [x for x row/column if x not in combo_solve]:
+            for i in combo_solve[0].possible:
+                if i in z.possible:
+                    z.possible.remove(i)
+    '''Ohhhhhh boy this (above ^^^) is ugly as heck. Gotta clean it up, but it's
+    the core logic at least.'''
+    #################
 
 
 size = int(input("What is the puzzle size?\n> "))
