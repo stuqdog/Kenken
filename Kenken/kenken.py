@@ -256,14 +256,14 @@ def reduce_x_y(val):
             solved.append(cell.actual)
 
     ##################
-    for _ in range(2, size):
-        combo_solve = [x for x in itertools.combinations(row/column, _) if
-                       all(y.possible == x[0].possible for y in x) and
-                       len(x[0].possible) == _]
-        for z in [x for x row/column if x not in combo_solve]:
-            for i in combo_solve[0].possible:
-                if i in z.possible:
-                    z.possible.remove(i)
+    # for _ in range(2, size):
+    #     combo_solve = [x for x in itertools.combinations(row/column, _) if
+    #                    all(y.possible == x[0].possible for y in x) and
+    #                    len(x[0].possible) == _]
+    #     for z in [x for x row/column if x not in combo_solve]:
+    #         for i in combo_solve[0].possible:
+    #             if i in z.possible:
+    #                 z.possible.remove(i)
     '''Ohhhhhh boy this (above ^^^) is ugly as heck. Gotta clean it up, but it's
     the core logic at least.'''
     #################
